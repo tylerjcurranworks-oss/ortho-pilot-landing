@@ -133,7 +133,6 @@
   <script>
     (function () {
       var RECEIVER = "https://tylers-mac-mini.tail46b655.ts.net:8443/lead";
-      var EMAIL_BACKUP = "https://formspree.io/theopenclawtc@gmail.com";
 
       var form = document.getElementById("lead-form");
       var btn = document.getElementById("submit-btn");
@@ -182,18 +181,8 @@
           body: JSON.stringify(lead)
         }).then(function (r) { if (!r.ok) throw new Error("receiver " + r.status); return true; });
 
-        var backup = fetch(EMAIL_BACKUP, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "Accept": "application/json" },
-          body: JSON.stringify(Object.assign({
-            _subject: "[Ortho lead] " + lead.practice + " · " + lead.tags.join(", "),
-            _replyto: lead.email
-          }, lead, { tags: lead.tags.join(", ") }))
-        }).then(function (r) { if (!r.ok) throw new Error("backup " + r.status); return true; });
-
-        Promise.allSettled([primary, backup]).then(function (results) {
-          var anyOk = results.some(function (r) { return r.status === "fulfilled"; });
-          if (anyOk) {
+        primary.then(function () { return true; }, function () { return false; }).then(function (ok) {
+          if (ok) {
             form.reset();
             var pilot = lead.tags.indexOf("gpc-pilot") >= 0;
             show("ok", pilot
