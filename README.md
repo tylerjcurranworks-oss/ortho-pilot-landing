@@ -15,12 +15,13 @@ Static page (`index.html`) hosted on GitHub Pages. No patient data, no PHI, no c
    - `gpc-pilot` — Athena/Tebra + in-house billing + 2–8 surgeons
    - `gpc-pilot-size-review` — Athena/Tebra + in-house, size outside 2–8
    - `gpc-deprioritized` — other PM or outsourced billing
-3. Browser POSTs the lead to two sinks in parallel:
-   - **Primary:** `receiver/lead-receiver.ts` (Deno, Mac mini, exposed via Tailscale Funnel on `:8443`).
+3. Browser POSTs the lead to the receiver:
+   - `receiver/lead-receiver.ts` (Deno, Mac mini, exposed via Tailscale Funnel on `:8443`).
      Re-validates and re-tags server-side, appends to `leads.jsonl`, and fires the Paperclip
      routine webhook "Ortho pilot lead intake". Each lead becomes a run issue under CUR-3385
      assigned to the CTO, who forwards to the CMO on CUR-3376.
-   - **Backup:** Formspree legacy email endpoint → company inbox.
+   - If the receiver is unreachable the page shows a mailto fallback to the company inbox.
+     (Formspree legacy email endpoints were tested and return `FORM_NOT_FOUND`; not used.)
 
 ## Running the receiver
 
